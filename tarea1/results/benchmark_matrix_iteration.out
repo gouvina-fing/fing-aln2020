@@ -1,0 +1,4 @@
+Results for iterating on a 8096x8096 matrix:
+
+Iterating through rows: 48.723484 ms
+Iterating through cols: 314.303484 ms

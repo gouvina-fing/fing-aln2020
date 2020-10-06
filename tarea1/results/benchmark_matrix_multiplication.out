@@ -1,0 +1,4 @@
+Results for multiplicating two 4096x4096 matrixes:
+
+Multiplication through rows/columns: 219703.468994 ms
+Multiplication through rows/rows: 17361.885986 ms
