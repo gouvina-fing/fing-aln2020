@@ -8,7 +8,7 @@
 #define TIME(t_i,t_f) ((double) t_f.tv_sec * 1000.0 + (double) t_f.tv_usec / 1000.0) - \
                       ((double) t_i.tv_sec * 1000.0 + (double) t_i.tv_usec / 1000.0);
 #define RUNS 1
-#define MATRIX_SIZE 512
+#define MATRIX_SIZE 1024
 
 void random_matrix(float **M) {
     for (unsigned int i = 0; i < MATRIX_SIZE; ++i)
@@ -27,7 +27,6 @@ void zero_matrix(float **M, int size) {
 void initialize_zero_matrix(float ***C, int size)  {
     *C = (float**) malloc(size*sizeof(float*));
     for (int i = 0; i < size; ++i) (*C)[i] = (float*) malloc(size*sizeof(float));
-    zero_matrix(*C, size);
 }
 
 void initialize_random_data(float ***A, float ***B) {
@@ -233,13 +232,14 @@ void benchmark(double *normal_time, double *row_time, double *col_time, double *
     col_mult(A, B, C, MATRIX_SIZE, MATRIX_SIZE, MATRIX_SIZE);
     gettimeofday(&t_f, NULL);
     *col_time += TIME(t_i,t_f);
-    zero_matrix(C, MATRIX_SIZE);
+    // zero_matrix(C, MATRIX_SIZE);
 
     // Evaluate strassen_mult timing
     gettimeofday(&t_i, NULL);
-    C = strassen_mult(A, B, MATRIX_SIZE);
+    float ** D = strassen_mult(A, B, MATRIX_SIZE);
     gettimeofday(&t_f, NULL);
     *strassen_time += TIME(t_i,t_f);
+    // assert_matrix_equality(C, D);
 
     free_matrix(&A, MATRIX_SIZE);
     free_matrix(&B, MATRIX_SIZE);
