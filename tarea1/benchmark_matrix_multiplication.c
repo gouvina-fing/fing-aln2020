@@ -10,43 +10,43 @@
 #define RUNS 1
 #define MATRIX_SIZE 1024
 
-void random_matrix(float **M) {
+void random_matrix(int **M) {
     for (unsigned int i = 0; i < MATRIX_SIZE; ++i)
         for (unsigned int j = 0; j < MATRIX_SIZE; ++j) { 
-            M[i][j] = (float)rand() / (float)RAND_MAX;
+            M[i][j] = rand();
         }
 }
 
-void zero_matrix(float **M, int size) {
+void zero_matrix(int **M, int size) {
     for (unsigned int i = 0; i < size; ++i)
         for (unsigned int j = 0; j < size; ++j) { 
             M[i][j] = 0;
         }
 }
 
-void initialize_zero_matrix(float ***C, int size)  {
-    *C = (float**) malloc(size*sizeof(float*));
-    for (int i = 0; i < size; ++i) (*C)[i] = (float*) malloc(size*sizeof(float));
+void initialize_zero_matrix(int ***C, int size)  {
+    *C = (int**) malloc(size*sizeof(int*));
+    for (int i = 0; i < size; ++i) (*C)[i] = (int*) malloc(size*sizeof(int));
 }
 
-void initialize_random_data(float ***A, float ***B) {
-    *A = (float**) malloc(MATRIX_SIZE*sizeof(float*));
-    for (int i = 0; i < MATRIX_SIZE; ++i) (*A)[i] = (float*) malloc(MATRIX_SIZE*sizeof(float)); 
+void initialize_random_data(int ***A, int ***B) {
+    *A = (int**) malloc(MATRIX_SIZE*sizeof(int*));
+    for (int i = 0; i < MATRIX_SIZE; ++i) (*A)[i] = (int*) malloc(MATRIX_SIZE*sizeof(int)); 
 
-    *B = (float**) malloc(MATRIX_SIZE*sizeof(float*));
-    for (int i = 0; i < MATRIX_SIZE; ++i) (*B)[i] = (float*) malloc(MATRIX_SIZE*sizeof(float));
+    *B = (int**) malloc(MATRIX_SIZE*sizeof(int*));
+    for (int i = 0; i < MATRIX_SIZE; ++i) (*B)[i] = (int*) malloc(MATRIX_SIZE*sizeof(int));
 
     random_matrix(*A);
     random_matrix(*B);
 }
 
-void free_matrix(float ***A, int size) {
+void free_matrix(int ***A, int size) {
     for (int i = 0; i < size; ++i) free((*A)[i]);
     free(*A);
 }
 
-float** add(float** A, float** B, int n) {
-    float** temp;
+int** add(int** A, int** B, int n) {
+    int** temp;
     initialize_zero_matrix(&temp, n);
     for(unsigned int i=0; i<n; ++i)
         for(unsigned int j=0; j<n; ++j)
@@ -54,8 +54,8 @@ float** add(float** A, float** B, int n) {
     return temp;
 }
 
-float** subtract(float** A, float** B, int n) {
-    float** temp;
+int** subtract(int** A, int** B, int n) {
+    int** temp;
     initialize_zero_matrix(&temp, n);
     for(unsigned int i=0; i<n; i++)
         for(unsigned int j=0; j<n; j++)
@@ -64,7 +64,7 @@ float** subtract(float** A, float** B, int n) {
 }
 
 // Complexity O^3
-void normal_mult(float **A, float **B, float **C, int m, int p, int n) {
+void normal_mult(int **A, int **B, int **C, int m, int p, int n) {
     // Multiplying A and B and storing in C.
     for (unsigned int i = 0; i < m; ++i) {
         for (unsigned int j = 0; j < n; ++j) {
@@ -76,7 +76,7 @@ void normal_mult(float **A, float **B, float **C, int m, int p, int n) {
 }
 
 // Complexity O^3
-void row_mult(float **A, float **B, float **C, int m, int p, int n) {
+void row_mult(int **A, int **B, int **C, int m, int p, int n) {
     // Multiplying A and B and storing in C.
     for (unsigned int i = 0; i < m; ++i) {
         for (unsigned int k = 0; k < p; ++k) {
@@ -88,7 +88,7 @@ void row_mult(float **A, float **B, float **C, int m, int p, int n) {
 }
 
 // Complexity O^3
-void col_mult(float **A, float **B, float **C, int m, int p, int n) {
+void col_mult(int **A, int **B, int **C, int m, int p, int n) {
     // Multiplying A and B and storing in C.
     for (unsigned int j = 0; j < n; ++j) {
         for (unsigned int k = 0; k < p; ++k) {
@@ -101,8 +101,8 @@ void col_mult(float **A, float **B, float **C, int m, int p, int n) {
 
 
 // Complexity O^2.808
-float** strassen_mult(float **A, float **B, int n) {
-    float** C;
+int** strassen_mult(int **A, int **B, int n) {
+    int** C;
     initialize_zero_matrix(&C, n);
     if (n == 1) {
         C[0][0] = A[0][0] * B[0][0];
@@ -110,7 +110,7 @@ float** strassen_mult(float **A, float **B, int n) {
     }
 
     int k = n/2;
-    float **A11, **A12, **A21, **A22, **B11, **B12, **B21, **B22;
+    int **A11, **A12, **A21, **A22, **B11, **B12, **B21, **B22;
     initialize_zero_matrix(&A11, k);
     initialize_zero_matrix(&A12, k);
     initialize_zero_matrix(&A21, k);
@@ -132,30 +132,30 @@ float** strassen_mult(float **A, float **B, int n) {
             B22[i][j] = B[k+i][k+j];
         }
 
-    float** P1 = strassen_mult(A11, subtract(B12, B22, k), k);
-    float** P2 = strassen_mult(add(A11, A12, k), B22, k);
-    float** P3 = strassen_mult(add(A21, A22, k), B11, k);
-    float** P4 = strassen_mult(A22, subtract(B21, B11, k), k);
-    float** P5 = strassen_mult(add(A11, A22, k), add(B11, B22, k), k);
-    float** P6 = strassen_mult(subtract(A12, A22, k), add(B21, B22, k), k);
+    int** P1 = strassen_mult(A11, subtract(B12, B22, k), k);
+    int** P2 = strassen_mult(add(A11, A12, k), B22, k);
+    int** P3 = strassen_mult(add(A21, A22, k), B11, k);
+    int** P4 = strassen_mult(A22, subtract(B21, B11, k), k);
+    int** P5 = strassen_mult(add(A11, A22, k), add(B11, B22, k), k);
+    int** P6 = strassen_mult(subtract(A12, A22, k), add(B21, B22, k), k);
     free_matrix(&A12, k);
     free_matrix(&A22, k);
     free_matrix(&B21, k);
     free_matrix(&B22, k);
 
-    float** P7 = strassen_mult(subtract(A11, A21, k), add(B11, B12, k), k);
+    int** P7 = strassen_mult(subtract(A11, A21, k), add(B11, B12, k), k);
     free_matrix(&A11, k);
     free_matrix(&A21, k);
     free_matrix(&B11, k);
     free_matrix(&B12, k);
 
-    float** C11 = subtract(add(add(P5, P4, k), P6, k), P2, k);
+    int** C11 = subtract(add(add(P5, P4, k), P6, k), P2, k);
     free_matrix(&P6, k);
 
-    float** C12 = add(P1, P2, k);
+    int** C12 = add(P1, P2, k);
     free_matrix(&P2, k);
 
-    float** C21 = add(P3, P4, k);
+    int** C21 = add(P3, P4, k);
     free_matrix(&P4, k);
 
     float** C22 = subtract(subtract(add(P5, P1, k), P3, k), P7, k);
@@ -184,12 +184,12 @@ void assert_matrix_equality(float **A, float **B) {
     for (unsigned int i = 0; i < MATRIX_SIZE; ++i)
         for (unsigned int j = 0; j < MATRIX_SIZE; ++j)
             if (A[i][j] != B[i][j])
-                printf("%f, %f\n", A[i][j], B[i][j]); //assert(A[i][j] == B[i][j]);
+                printf("%d, %d\n", A[i][j], B[i][j]); //assert(A[i][j] == B[i][j]);
 }
 
 void benchmark(double *normal_time, double *row_time, double *col_time, double *strassen_time) {
     // Generate random matrix
-    float **A, **B, **C;
+    int **A, **B, **C;
     initialize_random_data(&A, &B);
     initialize_zero_matrix(&C, MATRIX_SIZE);
 
@@ -218,10 +218,10 @@ void benchmark(double *normal_time, double *row_time, double *col_time, double *
 
     // Evaluate strassen_mult timing
     gettimeofday(&t_i, NULL);
-    float ** D = strassen_mult(A, B, MATRIX_SIZE);
+    int ** D = strassen_mult(A, B, MATRIX_SIZE);
     gettimeofday(&t_f, NULL);
     *strassen_time += TIME(t_i,t_f);
-    // assert_matrix_equality(C, D);
+    //assert_matrix_equality(C, D);
 
     free_matrix(&A, MATRIX_SIZE);
     free_matrix(&B, MATRIX_SIZE);
