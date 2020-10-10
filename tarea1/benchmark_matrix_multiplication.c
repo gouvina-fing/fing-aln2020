@@ -135,15 +135,35 @@ float** strassen_mult(float **A, float **B, int n) {
     float** P1 = strassen_mult(A11, subtract(B12, B22, k), k);
     float** P2 = strassen_mult(add(A11, A12, k), B22, k);
     float** P3 = strassen_mult(add(A21, A22, k), B11, k);
+    free_matrix(&A21, k);
+
     float** P4 = strassen_mult(A22, subtract(B21, B11, k), k);
     float** P5 = strassen_mult(add(A11, A22, k), add(B11, B22, k), k);
     float** P6 = strassen_mult(subtract(A12, A22, k), add(B21, B22, k), k);
+    free_matrix(&A12, k);
+    free_matrix(&A22, k);
+    free_matrix(&B21, k);
+    free_matrix(&B22, k);
+
     float** P7 = strassen_mult(subtract(A11, A21, k), add(B11, B12, k), k);
+    free_matrix(&A11, k);
+    free_matrix(&B11, k);
+    free_matrix(&B12, k);
 
     float** C11 = subtract(add(add(P5, P4, k), P6, k), P2, k);
+    free_matrix(&P6, k);
+
     float** C12 = add(P1, P2, k);
+    free_matrix(&P2, k);
+
     float** C21 = add(P3, P4, k);
+    free_matrix(&P4, k);
+
     float** C22 = subtract(subtract(add(P5, P1, k), P3, k), P7, k);
+    free_matrix(&P1, k);
+    free_matrix(&P3, k);
+    free_matrix(&P5, k);
+    free_matrix(&P7, k);
 
     for(unsigned int i=0; i<k; ++i)
         for(unsigned int j=0; j<k; ++j) {
@@ -153,49 +173,12 @@ float** strassen_mult(float **A, float **B, int n) {
             C[k+i][k+j] = C22[i][j];
         }
     
-    free_matrix(&A11, k);
-    free_matrix(&A12, k);
-    free_matrix(&A21, k);
-    free_matrix(&A22, k);
-    free_matrix(&B11, k);
-    free_matrix(&B12, k);
-    free_matrix(&B21, k);
-    free_matrix(&B22, k);
-    free_matrix(&P1, k);
-    free_matrix(&P2, k);
-    free_matrix(&P3, k);
-    free_matrix(&P4, k);
-    free_matrix(&P5, k);
-    free_matrix(&P6, k);
-    free_matrix(&P7, k);
     free_matrix(&C11, k);
     free_matrix(&C12, k);
     free_matrix(&C21, k);
     free_matrix(&C22, k);
 
     return C;
-}
-
-/* Ej C)
-*   Construir la multiplicacion de matrices "por bloques" de tamanio variable (nb = 64, 128, 256, 512)
-*   Las matrices no tienen porque ser cuadradas.
-*   C = A x B. C_{ij} = Sum{k=1}{p}(A_{ik} x B_{kj})
-*/
-void mult_por_bloques(float **A, float **B, float **C, int m, int p, int n, int nb) {
-    int blockSize = nb;
-
-    // Initializing elements of matrix mult to 0.
-    for (unsigned int i = 0; i < m; ++i)
-        for (unsigned int j = 0; j < n; ++j)
-            C[i][j] = 0;
-
-    for (unsigned int bi=0; bi<m; bi+=blockSize)
-        for (unsigned int bj=0; bj<n; bj+=blockSize)
-            for (unsigned int bk=0; bk<p; bk+=blockSize)
-                for (unsigned int i=0; i<blockSize; i++)
-                    for (unsigned int k=0; k<blockSize; k++)
-                        for (unsigned int j=0; j<blockSize; j++)
-                            C[bi+i][bj+j] += A[bi+i][bk+k]*B[bk+k][bj+j];
 }
 
 void assert_matrix_equality(float **A, float **B) {
