@@ -1,4 +1,12 @@
 Results for multiplicating two 4096x4096 matrixes:
 
-Multiplication through rows/columns: 219703.468994 ms
-Multiplication through rows/rows: 17361.885986 ms
+Multiplication through cols/cols: 501091.119141 ms
+Multiplication through rows/columns: 220154.662109 ms
+Multiplication through rows/rows: 20739.329102 ms
+
+Results for multiplicating two 512x512 matrixes:
+
+Multiplication through cols/cols: 198.516968 ms
+Multiplication through rows/columns: 100.420532 ms
+Multiplication through rows/rows: 36.021118 ms
+Multiplication using strassen algorithm: 6883.022583 ms

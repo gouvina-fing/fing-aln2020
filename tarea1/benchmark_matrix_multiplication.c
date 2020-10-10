@@ -8,7 +8,7 @@
 #define TIME(t_i,t_f) ((double) t_f.tv_sec * 1000.0 + (double) t_f.tv_usec / 1000.0) - \
                       ((double) t_i.tv_sec * 1000.0 + (double) t_i.tv_usec / 1000.0);
 #define RUNS 1
-#define MATRIX_SIZE 1024
+#define MATRIX_SIZE 4096
 
 void random_matrix(float **M) {
     for (unsigned int i = 0; i < MATRIX_SIZE; ++i)
@@ -24,7 +24,7 @@ void zero_matrix(float **M, int size) {
         }
 }
 
-void initialize_zero_matrix(float ***C, int size)  {
+void initialize_empty_matrix(float ***C, int size)  {
     *C = (float**) malloc(size*sizeof(float*));
     for (int i = 0; i < size; ++i) (*C)[i] = (float*) malloc(size*sizeof(float));
 }
@@ -47,7 +47,7 @@ void free_matrix(float ***A, int size) {
 
 float** add(float** A, float** B, int n) {
     float** temp;
-    initialize_zero_matrix(&temp, n);
+    initialize_empty_matrix(&temp, n);
     for(unsigned int i=0; i<n; ++i)
         for(unsigned int j=0; j<n; ++j)
             temp[i][j] = A[i][j] + B[i][j];
@@ -56,7 +56,7 @@ float** add(float** A, float** B, int n) {
 
 float** subtract(float** A, float** B, int n) {
     float** temp;
-    initialize_zero_matrix(&temp, n);
+    initialize_empty_matrix(&temp, n);
     for(unsigned int i=0; i<n; i++)
         for(unsigned int j=0; j<n; j++)
             temp[i][j] = A[i][j] - B[i][j];
@@ -99,26 +99,25 @@ void col_mult(float **A, float **B, float **C, int m, int p, int n) {
     }
 }
 
-
 // Complexity O^2.808
 float** strassen_mult(float **A, float **B, int n) {
     float** C;
-    initialize_zero_matrix(&C, n);
     if (n == 1) {
+        initialize_empty_matrix(&C, n);
         C[0][0] = A[0][0] * B[0][0];
         return C;
     }
 
     int k = n/2;
     float **A11, **A12, **A21, **A22, **B11, **B12, **B21, **B22;
-    initialize_zero_matrix(&A11, k);
-    initialize_zero_matrix(&A12, k);
-    initialize_zero_matrix(&A21, k);
-    initialize_zero_matrix(&A22, k);
-    initialize_zero_matrix(&B11, k);
-    initialize_zero_matrix(&B12, k);
-    initialize_zero_matrix(&B21, k);
-    initialize_zero_matrix(&B22, k);
+    initialize_empty_matrix(&A11, k);
+    initialize_empty_matrix(&A12, k);
+    initialize_empty_matrix(&A21, k);
+    initialize_empty_matrix(&A22, k);
+    initialize_empty_matrix(&B11, k);
+    initialize_empty_matrix(&B12, k);
+    initialize_empty_matrix(&B21, k);
+    initialize_empty_matrix(&B22, k);
 
     for(unsigned int i=0; i<k; ++i)
         for(unsigned int j=0; j<k; ++j) {
@@ -164,6 +163,7 @@ float** strassen_mult(float **A, float **B, int n) {
     free_matrix(&P5, k);
     free_matrix(&P7, k);
 
+    initialize_empty_matrix(&C, n);
     for(unsigned int i=0; i<k; ++i)
         for(unsigned int j=0; j<k; ++j) {
             C[i][j] = C11[i][j];
@@ -176,7 +176,6 @@ float** strassen_mult(float **A, float **B, int n) {
     free_matrix(&C12, k);
     free_matrix(&C21, k);
     free_matrix(&C22, k);
-
     return C;
 }
 
@@ -184,14 +183,14 @@ void assert_matrix_equality(float **A, float **B) {
     for (unsigned int i = 0; i < MATRIX_SIZE; ++i)
         for (unsigned int j = 0; j < MATRIX_SIZE; ++j)
             if (A[i][j] != B[i][j])
-                printf("%f, %f\n", A[i][j], B[i][j]); //assert(A[i][j] == B[i][j]);
+                printf("%f, %f\n", A[i][j], B[i][j]);
 }
 
 void benchmark(double *normal_time, double *row_time, double *col_time, double *strassen_time) {
     // Generate random matrix
     float **A, **B, **C;
     initialize_random_data(&A, &B);
-    initialize_zero_matrix(&C, MATRIX_SIZE);
+    initialize_empty_matrix(&C, MATRIX_SIZE);
 
     struct timeval t_i, t_f;
 
@@ -214,18 +213,17 @@ void benchmark(double *normal_time, double *row_time, double *col_time, double *
     col_mult(A, B, C, MATRIX_SIZE, MATRIX_SIZE, MATRIX_SIZE);
     gettimeofday(&t_f, NULL);
     *col_time += TIME(t_i,t_f);
-    // zero_matrix(C, MATRIX_SIZE);
+    free_matrix(&C, MATRIX_SIZE);
 
     // Evaluate strassen_mult timing
     gettimeofday(&t_i, NULL);
-    float ** D = strassen_mult(A, B, MATRIX_SIZE);
+    // float **D = strassen_mult(A, B, MATRIX_SIZE);
     gettimeofday(&t_f, NULL);
     *strassen_time += TIME(t_i,t_f);
-    // assert_matrix_equality(C, D);
 
     free_matrix(&A, MATRIX_SIZE);
     free_matrix(&B, MATRIX_SIZE);
-    free_matrix(&C, MATRIX_SIZE);
+    // free_matrix(&D, MATRIX_SIZE);
 }
 
 
