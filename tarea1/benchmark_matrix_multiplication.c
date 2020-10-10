@@ -135,8 +135,6 @@ float** strassen_mult(float **A, float **B, int n) {
     float** P1 = strassen_mult(A11, subtract(B12, B22, k), k);
     float** P2 = strassen_mult(add(A11, A12, k), B22, k);
     float** P3 = strassen_mult(add(A21, A22, k), B11, k);
-    free_matrix(&A21, k);
-
     float** P4 = strassen_mult(A22, subtract(B21, B11, k), k);
     float** P5 = strassen_mult(add(A11, A22, k), add(B11, B22, k), k);
     float** P6 = strassen_mult(subtract(A12, A22, k), add(B21, B22, k), k);
@@ -147,6 +145,7 @@ float** strassen_mult(float **A, float **B, int n) {
 
     float** P7 = strassen_mult(subtract(A11, A21, k), add(B11, B12, k), k);
     free_matrix(&A11, k);
+    free_matrix(&A21, k);
     free_matrix(&B11, k);
     free_matrix(&B12, k);
 
