@@ -8,7 +8,7 @@
 #define TIME(t_i,t_f) ((double) t_f.tv_sec * 1000.0 + (double) t_f.tv_usec / 1000.0) - \
                       ((double) t_i.tv_sec * 1000.0 + (double) t_i.tv_usec / 1000.0);
 #define RUNS 1
-#define MATRIX_SIZE 4096
+#define MATRIX_SIZE 512
 
 void random_matrix(float **M) {
     for (unsigned int i = 0; i < MATRIX_SIZE; ++i)
@@ -217,13 +217,13 @@ void benchmark(double *normal_time, double *row_time, double *col_time, double *
 
     // Evaluate strassen_mult timing
     gettimeofday(&t_i, NULL);
-    // float **D = strassen_mult(A, B, MATRIX_SIZE);
+    float **D = strassen_mult(A, B, MATRIX_SIZE);
     gettimeofday(&t_f, NULL);
     *strassen_time += TIME(t_i,t_f);
 
     free_matrix(&A, MATRIX_SIZE);
     free_matrix(&B, MATRIX_SIZE);
-    // free_matrix(&D, MATRIX_SIZE);
+    free_matrix(&D, MATRIX_SIZE);
 }
 
 
