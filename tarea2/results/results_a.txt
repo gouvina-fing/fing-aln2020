@@ -1,0 +1,17 @@
+2048:
+
+Matlab: 0.0965
+Vector: 125.8586
+Coefs:  127.5896
+
+4096:
+
+Matlab: 0.6379
+Vector: 894.8913
+Coefs:  1025.4
+
+8192:
+
+Matlab: 4.3552
+Vector: 5935.6
+Coefs: 13772.0
