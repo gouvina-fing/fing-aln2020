@@ -21,8 +21,13 @@ A_1024 = rand(1024);
 % eig ejecuta las siguientes rutinas de LAPACK:
 % DGEEV (with the scaling factor SCLFAC = 2 in DGEBAL, instead of the LAPACK default value of 8)
 
+tStart = tic;
 [V_10_eig, D_10_eig] = eig(A_10);
+t_10_eig = toc(tStart);
+
+tStart = tic;
 [V_1024_eig, D_1024_eig] = eig(A_1024);
+t_1024_eig = toc(tStart);
 
 % [V,D] = eig(A,'nobalance') finds eigenvalues and eigenvectors without a preliminary balancing step.
 % Ordinarily, balancing improves the conditioning of the input matrix, enabling more accurate computation of the eigenvectors and eigenvalues.
@@ -32,21 +37,45 @@ A_1024 = rand(1024);
 % eig ejecuta las siguientes rutinas de LAPACK:
 % DGEHRD, DORGHR, DHSEQR, DTREVC
 
+tStart = tic;
 [V_10_eig_nb, D_10_eig_nb] = eig(A_10, 'nobalance');
+t_10_eig_nb = toc(tStart);
+
+tStart = tic;
 [V_1024_eig_nb, D_1024_eig_nb] = eig(A_1024, 'nobalance');
+t_1024_eig_nb = toc(tStart);
+
 
 % eigs:
 % http://matlab.izmiran.ru/help/techdoc/ref/eigs.html
 % Usa un método iterativo encontrar los valores propios. Sirve mejor cuando la matriz es grande, sparse y no simétrica.
 % eigs provides the reverse communication required by the Fortran library ARPACK, namely the routines DSAUPD, DSEUPD, DNAUPD, DNEUPD, ZNAUPD, and ZNEUPD.
 
+tStart = tic;
 [V_10_eigs, D_10_eigs] = eigs(A_10, 10);
-[V_1024_eigs, D_1024_eigs] = eigs(A_1024, 1024);
+t_10_eigs = toc(tStart);
 
-% Estos metodos no andan? Borrar?
-% l = ww(A_10, 0.00001);
-% [e_val,e_vec] = Power_method_dominant_eig(A_10)
-% [Q, R] = QR_GramSchmidt(A_10)
+tStart = tic;
+[V_1024_eigs, D_1024_eigs] = eigs(A_1024, 1024);
+t_1024_eigs = toc(tStart);
+
+% A. Análisis precisión tomando eig como baseline
+
+% Values
+
+error_value_10_eig_nb = norm(diag(D_10_eig) - diag(D_10_eig_nb));
+error_value_10_eigs = norm(diag(D_10_eig) - diag(D_10_eigs));
+
+error_value_1024_eig_nb = norm(diag(D_1024_eig) - diag(D_1024_eig_nb));
+error_value_1024_eigs = norm(diag(D_1024_eig) - diag(D_1024_eigs));
+
+% Vectors
+
+error_vector_10_eig_nb = norm(V_10_eig - V_10_eig_nb);
+error_vector_10_eigs = norm(V_10_eig - V_10_eigs);
+
+error_vector_1024_eig_nb = norm(V_1024_eig - V_1024_eig_nb);
+error_vector_1024_eigs = norm(V_1024_eig - V_1024_eigs);
 
 % Evalúe el desempeño de las mismas (tiempo de ejecución, precisión, utilización de memoria, etc.)
 % con el comando whos se pueden mirar tamaños en memoria.
@@ -65,12 +94,49 @@ bcsstk01 = Problem.A;
 
 % Repita la parte a) (utilizando técnicas adecuadas para matrices dispersas)
 
-% tic; 
-[V_k15_eigs, D_k15_eigs] = eigs(bcsstk15, 3948);
+tStart = tic;
 [V_k15_eig, D_k15_eig] = eig(full(bcsstk15));
+t_k15_eig = toc(tStart);
 
-[V_k01_eigs, D_k01_eigs] = eigs(bcsstk01, 48);
+tStart = tic;
 [V_k01_eig, D_k01_eig] = eig(full(bcsstk01));
+t_k01_eig = toc(tStart);
+
+
+tStart = tic;
+[V_k15_eig_nb, D_k15_eig_nb] = eig(full(bcsstk15), 'nobalance');
+t_k15_eig_nb = toc(tStart);
+
+tStart = tic;
+[V_k01_eig_nb, D_k01_eig_nb] = eig(full(bcsstk01), 'nobalance');
+t_k01_eig_nb = toc(tStart);
+
+
+tStart = tic;
+[V_k15_eigs, D_k15_eigs] = eigs(bcsstk15, 3948);
+t_k15_eigs = toc(tStart);
+
+tStart = tic;
+[V_k01_eigs, D_k01_eigs] = eigs(bcsstk01, 48);
+t_k01_eigs = toc(tStart);
+
+% B. Análisis precisión tomando eig como baseline
+
+% Values
+
+error_value_k15_eig_nb = norm(diag(D_k15_eig) - diag(D_k15_eig_nb));
+error_value_k15_eigs = norm(diag(D_k15_eig) - diag(D_k15_eigs));
+
+error_value_k01_eig_nb = norm(diag(D_k01_eig) - diag(D_k01_eig_nb));
+error_value_k01_eigs = norm(diag(D_k01_eig) - diag(D_k01_eigs));
+
+% Vectors
+
+error_vector_k15_eig_nb = norm(V_k15_eig - V_k15_eig_nb);
+error_vector_k15_eigs = norm(V_k15_eig - V_k15_eigs);
+
+error_vector_k01_eig_nb = norm(V_k01_eig - V_k01_eig_nb);
+error_vector_k01_eigs = norm(V_k01_eig - V_k01_eigs);
 
 % C
 
@@ -110,98 +176,81 @@ lena_1q_rango = nnz(lena_1q_svd);
 % Para comprimir podemos reconsturirla hasta un numero de valore singulares
 % entre 1 y el rango de la matriz (1 < k < r)
 
-lena_256 = uint8(lena_U*lena_S*lena_V');
-lena_128 = uint8(lena_U(:,1:128)*lena_S(1:128,1:128)*lena_V(:,1:128)');
-lena_64 = uint8(lena_U(:,1:64)*lena_S(1:64,1:64)*lena_V(:,1:64)');
-lena_32 = uint8(lena_U(:,1:32)*lena_S(1:32,1:32)*lena_V(:,1:32)');
-lena_16 = uint8(lena_U(:,1:16)*lena_S(1:16,1:16)*lena_V(:,1:16)');
-lena_8 = uint8(lena_U(:,1:8)*lena_S(1:8,1:8)*lena_V(:,1:8)');
+lena_192 = lena_U(:,1:192)*lena_S(1:192,1:192)*lena_V(:,1:192)';
+lena_128 = lena_U(:,1:128)*lena_S(1:128,1:128)*lena_V(:,1:128)';
+lena_64 = lena_U(:,1:64)*lena_S(1:64,1:64)*lena_V(:,1:64)';
+lena_32 = lena_U(:,1:32)*lena_S(1:32,1:32)*lena_V(:,1:32)';
+lena_16 = lena_U(:,1:16)*lena_S(1:16,1:16)*lena_V(:,1:16)';
+lena_8 = lena_U(:,1:8)*lena_S(1:8,1:8)*lena_V(:,1:8)';
+
+imwrite(lena_192, 'lena_192.pgm')
+imwrite(lena_128, 'lena_128.pgm')
+imwrite(lena_64, 'lena_64.pgm')
+imwrite(lena_32, 'lena_32.pgm')
+imwrite(lena_16, 'lena_16.pgm')
+imwrite(lena_8, 'lena_8.pgm')
+
+[lena_psnr_192, lena_snr_192] = psnr(lena, lena_192);
+lena_rmse_192 = sqrt(immse(lena, lena_192));
+[lena_psnr_128, lena_snr_128] = psnr(lena, lena_128);
+lena_rmse_128 = sqrt(immse(lena, lena_128));
+[lena_psnr_64, lena_snr_64] = psnr(lena, lena_64);
+lena_rmse_64 = sqrt(immse(lena, lena_64));
+[lena_psnr_32, lena_snr_32] = psnr(lena, lena_32);
+lena_rmse_32 = sqrt(immse(lena, lena_32));
+[lena_psnr_16, lena_snr_16] = psnr(lena, lena_16);
+lena_rmse_16 = sqrt(immse(lena, lena_16));
+[lena_psnr_8, lena_snr_8] = psnr(lena, lena_8);
+lena_rmse_8 = sqrt(immse(lena, lena_8));
+
+lena_size = 256^2;
+lena_svd_size_192 = 2*(192^2) + 192;
+lena_svd_size_128 = 2*(128^2) + 128;
+lena_svd_size_64 = 2*(64^2) + 64;
+lena_svd_size_32 = 2*(32^2) + 32;
+lena_svd_size_16 = 2*(16^2) + 16;
+lena_svd_size_8 = 2*(8^2) + 8;
 
 whos
 
+figure;
+
+title(sprintf('SVD Compression, image size: %d elements', lena_size))
+
 subplot(2,3,1)
 imshow(lena_256)
-title('Original, k = 256')
+title('Compressed, k = 192')
+xlabel(sprintf('%d elements svd (%.2f%% compression ratio) \n PSNR: %.4f dB; SNR: %.4f db; RMSE: %.4f', lena_size, lena_svd_size_192, 100*lena_size/lena_svd_size_192, lena_psnr_192, lena_snr_192, lena_rmse_192));
 
 subplot(2,3,2)
-spy(A1)
+imshow(lena_128)
 title('Compressed, k = 128')
+xlabel(sprintf('%d elements svd (%.2f%% compression ratio) \n PSNR: %.4f dB; SNR: %.4f dB; RMSE: %.4f', lena_svd_size_128, 100*lena_size/lena_svd_size_128, lena_psnr_128, lena_snr_128, lena_rmse_128));
 
 subplot(2,3,3)
-spy(A2)
+imshow(lena_64)
 title('Compressed, k = 64')
+xlabel(sprintf('%d elements svd (%.2f%% compression ratio) \n PSNR: %.4f dB; SNR: %.4f dB; RMSE: %.4f', lena_svd_size_64, 100*lena_size/lena_svd_size_64, lena_psnr_64, lena_snr_64, lena_rmse_64));
 
 subplot(2,3,4)
-spy(A3)
-title('Compressed, k = 32')
+imshow(lena_64)
+title('Compressed, k = 64')
+xlabel(sprintf('%d elements svd (%.2f%% compression ratio) \n PSNR: %.4f dB; SNR: %.4f dB; RMSE: %.4f', lena_svd_size_64, 100*lena_size/lena_svd_size_64, lena_psnr_64, lena_snr_64, lena_rmse_64));
 
 subplot(2,3,5)
-spy(A4)
-title('Compressed, k = 16')
+imshow(lena_32)
+title('Compressed, k = 32')
+xlabel(sprintf('%d elements svd (%.2f%% compression ratio) \n PSNR: %.4f dB; SNR: %.4f dB; RMSE: %.4f', lena_svd_size_32, 100*lena_size/lena_svd_size_32, lena_psnr_32, lena_snr_32, lena_rmse_32));
 
 subplot(2,3,6)
-spy(L)
-title('Compressed, k = 8')
+imshow(lena_16)
+title('Compressed, k = 16')
+xlabel(sprintf('%d elements svd (%.2f%% compression ratio) \n PSNR: %.4f dB; SNR: %.4f dB; RMSE: %.4f', lena_svd_size_16, 100*lena_size/lena_svd_size_16, lena_psnr_16, lena_snr_16, lena_rmse_16));
+
+% subplot(2,3,7)
+% imshow(lena_8)
+% title('Compressed, k = 8')
+% xlabel(sprintf('%d elements svd (%.2f%% compression ratio) \n PSNR: %.2f dB; SNR: %.2f dB; MSE: %.2f', lena_svd_size_8, 100*lena_size/lena_svd_size_8, lena_psnr_8, lena_snr_8, lena_rmse_8));
 
 % C4:
-% Proponga una solución para lograr una compresión similar con una mejor calidad de imagen. 
-
-function [Q R]=QR_GramSchmidt(A)
-[n n]=size(A);
-Q=zeros(n);
-R=zeros(n);
-R(1,1)=norm(A(:,1));
-Q(:,1)=A(:,1)/R(1,1);
-
-for j=2:n
-    Q(:,j)=A(:,j);
-    for i=1:j-1
-    Q(:,j)=Q(:,j)-A(:,j)'*Q(:,i)*Q(:,i);
-
-    R(i,j)=A(:,j)'*Q(:,i);
-
-    fprintf(['At iteration i = ',num2str(i),' QR is equal to ']) % print Ai
-    Q*R
-end
-R(j,j)=norm(Q(:,j));
-Q(:,j)=Q(:,j)/norm(Q(:,j));
-fprintf(['At iteration j = ',num2str(j),' QR is equal to '])
-    Q*R
-end   
-end
-
-function l = ww(A,E)
-    x = A(:,1);
-    l = 0;
-    blad = E;        % starting value of error
-    while blad>=E
-        y = A*x;
-        blad = l;
-        l = x.*y;  % Rayleigh
-        m = x.*x;
-        l = l/m;           % eigenvalue
-        blad = abs(l - blad);         % error
-        x = y;
-    end
-end
-
-function [e_val,e_vec] = Power_method_dominant_eig(A,x0,error,no_itr)
-    if nargin < 3 , error = 0.00001 ;no_itr = 20;  end
-    if nargin < 2 , error = 0.00001 ;no_itr = 20; x0=ones(size(A));x0=x0(:,1);  end
-    if nargin < 4 , error = 0.00001 ; end
-    x1 = A*x0;
-    x1 = x1/max(x1);
-    norm1 =norm(x1-x0);
-    i = 0;
-    while norm1 > 0.01
-        x2 = A*x1;
-        x2 = x2/max(real(x2));
-        norm1 = norm(x1-x2);
-        x1 = x2;
-        i = i + 1;
-        if no_itr > i && norm1 < error , break , end
-    end
-    e_vec = x1;
-    e_val = ((A*x1)'*x1)/(x1'*x1);
-    
-end
+% Proponga una solución para lograr una compresión similar con una mejor calidad de imagen.
