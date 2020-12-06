@@ -223,7 +223,7 @@ whos
 figure;
 
 subplot(2,3,1)
-imshow(lena_256)
+imshow(lena_192)
 title('Compressed, k = 192')
 xlabel(sprintf('%d elements svd (%.2f%% compression ratio) \n PSNR: %.4f dB; SNR: %.4f db; RMSE: %.4f', lena_svd_size_192, 100*lena_size/lena_svd_size_192, lena_psnr_192, lena_snr_192, lena_rmse_192));
 
