@@ -1,0 +1,17 @@
+error_value_1024_eig_nb, 0
+error_value_1024_eigs, 256.671900440546
+error_value_10_eig_nb, 0
+error_value_10_eigs, 1.422731448706172
+error_value_k01_eig_nb, 0
+error_value_k01_eigs, 1.062932206236067e+10
+error_value_k15_eig_nb, 0
+error_value_k15_eigs, 8.060660949513387e+10
+
+error_vector_1024_eig_nb, 0
+error_vector_1024_eigs, 5.673235479616464
+error_vector_10_eig_nb, 0
+error_vector_10_eigs, 2.342206385752345
+error_vector_k01_eig_nb, 0
+error_vector_k01_eigs, 2.000000000000001
+error_vector_k15_eig_nb, 0
+error_vector_k15_eigs, 2.000000000000006
