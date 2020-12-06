@@ -184,13 +184,13 @@ lena_32 = lena_U(:,1:32)*lena_S(1:32,1:32)*lena_V(:,1:32)';
 lena_16 = lena_U(:,1:16)*lena_S(1:16,1:16)*lena_V(:,1:16)';
 lena_8 = lena_U(:,1:8)*lena_S(1:8,1:8)*lena_V(:,1:8)';
 
-imwrite(lena_192, 'lena_192.pgm')
-imwrite(lena_128, 'lena_128.pgm')
-imwrite(lena_96, 'lena_96.pgm')
-imwrite(lena_64, 'lena_64.pgm')
-imwrite(lena_32, 'lena_32.pgm')
-imwrite(lena_16, 'lena_16.pgm')
-imwrite(lena_8, 'lena_8.pgm')
+imwrite(lena_192, 'tarea3/results/lena_192.pgm')
+imwrite(lena_128, 'tarea3/results/lena_128.pgm')
+imwrite(lena_96, 'tarea3/results/lena_96.pgm')
+imwrite(lena_64, 'tarea3/results/lena_64.pgm')
+imwrite(lena_32, 'tarea3/results/lena_32.pgm')
+imwrite(lena_16, 'tarea3/results/lena_16.pgm')
+imwrite(lena_8, 'tarea3/results/lena_8.pgm')
 
 [lena_psnr_192, lena_snr_192] = psnr(lena, lena_192);
 lena_rmse_192 = sqrt(immse(lena, lena_192));
