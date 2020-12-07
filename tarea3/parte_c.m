@@ -91,9 +91,9 @@ title('Compressed, k = 128')
 xlabel(sprintf('%d elements svd (%.2f%% compression ratio) \n PSNR: %.4f dB; SNR: %.4f dB; RMSE: %.4f', lena_svd_size_128, 100*lena_size/lena_svd_size_128, lena_psnr_128, lena_snr_128, lena_rmse_128));
 
 subplot(2,3,3)
-imshow(lena_64)
-title('Compressed, k = 64')
-xlabel(sprintf('%d elements svd (%.2f%% compression ratio) \n PSNR: %.4f dB; SNR: %.4f dB; RMSE: %.4f', lena_svd_size_64, 100*lena_size/lena_svd_size_64, lena_psnr_64, lena_snr_64, lena_rmse_64));
+imshow(lena_96)
+title('Compressed, k = 96')
+xlabel(sprintf('%d elements svd (%.2f%% compression ratio) \n PSNR: %.4f dB; SNR: %.4f dB; RMSE: %.4f', lena_svd_size_96, 100*lena_size/lena_svd_size_96, lena_psnr_96, lena_snr_96, lena_rmse_96));
 
 subplot(2,3,4)
 imshow(lena_64)

@@ -53,3 +53,5 @@ error_vector_k15_eigs = norm(V_k15_eig - V_k15_eigs);
 
 error_vector_k01_eig_nb = norm(V_k01_eig - V_k01_eig_nb);
 error_vector_k01_eigs = norm(V_k01_eig - V_k01_eigs);
+
+whos

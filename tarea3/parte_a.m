@@ -77,3 +77,5 @@ error_vector_1024_eigs = norm(V_1024_eig - V_1024_eigs);
 
 % Evalúe el desempeño de las mismas (tiempo de ejecución, precisión, utilización de memoria, etc.)
 % con el comando whos se pueden mirar tamaños en memoria.
+
+whos
